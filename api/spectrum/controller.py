@@ -2,11 +2,12 @@ from flask import request
 
 from api import app
 
-@app.route('/spectrum', methods=['POST', 'GET'])
-def spectrum():
-    if request.method == 'GET':
-        return {'params': ['sampling_rate', 'units', 'dtype']}
+@app.route('/spectrum', methods=['GET'])
+def getSpectrum():
+    return {'params': ['sampling_rate', 'units', 'dtype']}
 
+@app.route('/spectrum', methods=['POST'])
+def postSpectrum():
     req = request.get_json()
     sr = float(req['sampling_rate'])
     units = req["units"]
