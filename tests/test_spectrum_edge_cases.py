@@ -11,7 +11,7 @@ import collections
 
 @pytest.fixture
 def spectrum_test_meta():
-    """return request meta information for all routes"""
+    """return request meta information for /spectrum tets"""
     mimetype = 'application/json'
 
     return {
@@ -27,7 +27,7 @@ def spectrum_test_meta():
 
 @pytest.fixture
 def spectrum_test_data():
-    """return test data values for all routes"""
+    """return test data values for /spectrum tets"""
     # Commented out this time series as the endpoint does not 
     # accept a proper time series.  Instead it appears to only
     # accept a simple vector
@@ -66,7 +66,7 @@ def spectrum_test_data():
     }
 
 def test_spectrum_simple_success(client, spectrum_test_meta, spectrum_test_data):
-    """Provide simple vector to generate a successful spectrum calculation"""
+    """Provide simple spectrum vector to generate a successful spectrum calculation"""
     response = client.post(
         spectrum_test_meta['url'],
         data=json.dumps(spectrum_test_data['success_data']),
@@ -74,6 +74,7 @@ def test_spectrum_simple_success(client, spectrum_test_meta, spectrum_test_data)
     assert collections.Counter(response.json['spectrum']) == collections.Counter(np.arange(4, dtype=np.float64)) 
 
 def test_spectrum_broken_spectrum(client, spectrum_test_meta, spectrum_test_data):
+    """Provide a simple spectrum vector with a values that cannot be converted into timeseries"""
     response = client.post(
         spectrum_test_meta['url'],
         data=json.dumps(spectrum_test_data['broken_spectrum']),
@@ -82,11 +83,11 @@ def test_spectrum_broken_spectrum(client, spectrum_test_meta, spectrum_test_data
     assert response.status_code == 500
 
 def test_spectrum_broken_sampling_rate(client, spectrum_test_meta, spectrum_test_data):
+    """Provide a sampling rate that cannot be cast to float"""
     response = client.post(
         spectrum_test_meta['url'],
         data=json.dumps(spectrum_test_data['broken_sampling_rate']),
         headers=spectrum_test_meta['post']['headers'])
     assert response.mimetype == 'application/json'
     assert response.status_code == 400
-    print(response)
     assert response.json['error'] == 'Invalid Sampling Rate'

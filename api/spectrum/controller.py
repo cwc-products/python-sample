@@ -4,6 +4,7 @@ import numpy as np
 from flask import request
 from api import app
 
+# Spectrum get request will respond with the post paramaters expected by the post request.
 @app.route('/spectrum', methods=['GET'])
 def getSpectrum():
     return {'params': ['sampling_rate', 'units', 'dtype']}
