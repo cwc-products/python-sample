@@ -53,7 +53,7 @@ def spectrum_test_data():
     }
 
     broken_sampling_rate = {
-        'spectrum': ['a', 'b'],
+        'spectrum': s,
         'sampling_rate': 'a', 
         'units': 1,
         'dtype': 'float64'
@@ -71,7 +71,11 @@ def test_spectrum_simple_success(client, spectrum_test_meta, spectrum_test_data)
         spectrum_test_meta['url'],
         data=json.dumps(spectrum_test_data['success_data']),
         headers=spectrum_test_meta['post']['headers'])
-    assert collections.Counter(response.json['spectrum']) == collections.Counter(np.arange(4, dtype=np.float64)) 
+    print(response.json)
+    assert response.mimetype == 'application/json'
+    assert response.status_code == 200
+    assert response.json['spectrum'] == 'AAAAAAAAGEAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAEAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAwA=='
+    assert response.json['freq_range'] == 4.0
 
 def test_spectrum_broken_spectrum(client, spectrum_test_meta, spectrum_test_data):
     """Provide a simple spectrum vector with a values that cannot be converted into timeseries"""
